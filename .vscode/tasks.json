@@ -1,0 +1,23 @@
+{
+    "tasks": [
+        {
+			"label": "ninja build (Windows x64)",
+			"command": "cmd",
+			"type": "process",
+			"args": [
+				"/C",
+                "cd build",
+                "&&",
+				"ninja",
+			],
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+    ],
+    "version": "2.0.0"
+}

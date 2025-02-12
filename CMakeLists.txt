@@ -3,7 +3,7 @@ set(EXPORT_COMPILE_COMMANDS 1)
 project(sandbox)
 
 set(CMAKE_CXX_STANDARD 17)
-option(STATIC_GLFW "Should glfw be compiled locally" ON)
+option(STATIC_GLFW "Compile glfw locally" ON)
 
 if(STATIC_GLFW)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -12,7 +12,11 @@ if(STATIC_GLFW)
     add_subdirectory(vendored/glfw)
 else()
     link_libraries(GL glfw)
-endif()
+endif(STATIC_GLFW)
+
+if(WIN32)
+    link_libraries(opengl32)
+endif(WIN32)
 
 include_directories(
     include

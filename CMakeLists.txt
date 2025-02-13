@@ -11,11 +11,13 @@ if(STATIC_GLFW)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     add_subdirectory(vendored/glfw)
 else()
-    link_libraries(GL glfw)
+    link_libraries(glfw)
 endif(STATIC_GLFW)
 
 if(WIN32)
     link_libraries(opengl32)
+else()
+    link_libraries(GL)
 endif(WIN32)
 
 include_directories(

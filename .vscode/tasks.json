@@ -18,6 +18,45 @@
 				"isDefault": true
 			}
 		},
+		{
+            "label": "ninja build (Linux)",
+            "type": "shell",
+            "command": "",
+            "args": [
+                "cd",
+				"build",
+                "&&",
+				"make",
+            ],
+            "group":  {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal":"always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+		{
+            "label": "make build (Linux)",
+            "type": "shell",
+            "command": "",
+            "args": [
+                "cd",
+				"build",
+                "&&",
+				"make",
+            ],
+            "group":  {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal":"always"
+            },
+            "problemMatcher": "$msCompile"
+        }
+		
     ],
     "version": "2.0.0"
 }

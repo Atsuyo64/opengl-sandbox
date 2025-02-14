@@ -170,6 +170,7 @@ int main(int, char**)
         glfwSwapBuffers(window);
     }
 
+
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

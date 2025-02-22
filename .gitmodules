@@ -1,7 +1,7 @@
 [submodule "vendored/glfw"]
-	path = vendored/glfw
+	path = libs/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "vendored/imgui"]
-	path = vendored/imgui
+	path = libs/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking

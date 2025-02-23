@@ -3,8 +3,8 @@
 class Shader
 {
 public:
-    Shader(char *vertex_shader_path, char *fragment_shader_path);
-    Shader(char *vertex_shader_path, char *geometry_shader_path, char *fragment_shader_path);
+    Shader(char const *vertex_shader_path, char const *fragment_shader_path);
+    Shader(char const *vertex_shader_path, char const *geometry_shader_path, char const *fragment_shader_path);
     void use() const;
 
     ~Shader();
@@ -16,4 +16,5 @@ public:
     // void from_source(char* vertex_string,char* fragment_string);
     // void from_source(char* vertex_string,char* geometry_string,char* framgment_string);
 private:
+    GLint program;
 };

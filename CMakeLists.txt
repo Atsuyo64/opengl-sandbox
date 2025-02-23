@@ -27,6 +27,9 @@ include_directories(
     libs/imgui/backends
 )
 
+#add_compile_options($<$<CONFIG:Debug>:-fsanitize=address>)
+#add_link_options($<$<CONFIG:Debug>:-fsanitize=address>)
+
 FILE(GLOB SRC_FILES src/**.c src/**.cc src/**.cpp)
 #to add source files manually:
 #set(SRC_FILES

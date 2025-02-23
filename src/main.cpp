@@ -1,5 +1,6 @@
 #include "glad.h"
 #include "glDebugLog.hpp"
+#include "initVertexBuffer.hpp"
 #include "shader.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -65,20 +66,22 @@ int main(int, char **)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    float vertex_data[] = {
-        0.0, 0.5, 1.0, 0.0, 0.0, 1.0,
-        -0.5, -0.5, 0.0, 1.0, 0.0, 1.0,
-        0.5, -0.5, 0.0, 0.0, 1.0, 1.0};
+    struct MyVertexData
+    {
+        float pos[2];
+        float color[4];
+    };
+    MyVertexData vertex_data[] = {
+        {{0.0,0.5},{1.0,0.0,0.0,1.0}},
+        {{-0.5,-0.5},{0.0,1.0,0.0,1.0}},
+        {{0.5,-0.5},{0.0,0.0,1.0,1.0}},
+    };
     GLuint VAO,VBO;
     glGenVertexArrays(1,&VAO);
-    glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), vertex_data, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(2 * sizeof(float)));
+    VBO = initFloatVertexBuffer(vertex_data,3,GL_STATIC_DRAW,2,4);
+    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    
     Shader shader{"assets/poscolor.vert", "assets/color.frag"};
     
     // Our state
@@ -115,9 +118,9 @@ int main(int, char **)
             ImGui::Text("This is some useful text.");          // Display some text (you can use a format strings too)
             ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
 
-            ImGui::ColorEdit3("Vertex 1 color:",vertex_data+2);
-            ImGui::ColorEdit3("Vertex 2 color:",vertex_data+8);
-            ImGui::ColorEdit3("Vertex 3 color:",vertex_data+14);
+            ImGui::ColorEdit4("Vertex 1 color:",vertex_data[0].color);
+            ImGui::ColorEdit4("Vertex 2 color:",vertex_data[1].color);
+            ImGui::ColorEdit4("Vertex 3 color:",vertex_data[2].color);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();

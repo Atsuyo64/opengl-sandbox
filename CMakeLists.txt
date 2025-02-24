@@ -25,6 +25,7 @@ include_directories(
     libs/glad
     libs/imgui
     libs/imgui/backends
+    libs/glm
 )
 
 #add_compile_options($<$<CONFIG:Debug>:-fsanitize=address>)

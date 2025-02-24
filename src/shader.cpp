@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "glm/gtc/type_ptr.hpp"
 
 static GLint compile(char const *path, GLenum type)
 {
@@ -94,4 +95,11 @@ void Shader::use() const
 Shader::~Shader()
 {
     glDeleteProgram(program);
+}
+
+void Shader::setUniformMatrix4x4(char const *name, glm::mat4 const &value)
+{
+    //FIXME: store location
+    GLint location = glGetUniformLocation(program,name);
+    glUniformMatrix4fv(location,1,GL_FALSE,glm::value_ptr(value));
 }

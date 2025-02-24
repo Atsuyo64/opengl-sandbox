@@ -6,7 +6,9 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
+#include "camera.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -36,6 +38,8 @@ int main(int, char **)
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     set_opengl_log_level(4,true);
     glDebugMessageCallback(opengl_debug_callback,NULL);
+
+    EditorCamera camera{window};
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -75,12 +79,25 @@ int main(int, char **)
         {{0.0,0.5},{1.0,0.0,0.0,1.0}},
         {{-0.5,-0.5},{0.0,1.0,0.0,1.0}},
         {{0.5,-0.5},{0.0,0.0,1.0,1.0}},
+        {{0.0,0.0},{0.0,0.0,0.0,1.0}}
     };
     GLuint VAO,VBO;
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
-    VBO = initFloatVertexBuffer(vertex_data,3,GL_STATIC_DRAW,2,4);
+    VBO = initFloatVertexBuffer(vertex_data,4,GL_STATIC_DRAW,2,4);
     glBindBuffer(GL_ARRAY_BUFFER,VBO);
+
+    unsigned EBO_pyramid_data[] {0,1,2,0,1,3,0,2,3,1,2,3};
+    GLuint EBO_pyramid;
+    glGenBuffers(1,&EBO_pyramid);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO_pyramid);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,12*sizeof(unsigned),EBO_pyramid_data,GL_STATIC_DRAW);
+
+    unsigned EBO_mesh_data[] {0,1,0,2,0,3,1,2,1,3,2,3};
+    GLuint EBO_mesh;
+    glGenBuffers(1,&EBO_mesh);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO_mesh);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,12*sizeof(unsigned),EBO_mesh_data,GL_STATIC_DRAW);
     
     Shader shader{"assets/poscolor.vert", "assets/color.frag"};
     
@@ -121,7 +138,11 @@ int main(int, char **)
             ImGui::ColorEdit4("Vertex 1 color:",vertex_data[0].color);
             ImGui::ColorEdit4("Vertex 2 color:",vertex_data[1].color);
             ImGui::ColorEdit4("Vertex 3 color:",vertex_data[2].color);
-
+            auto vec = camera.getVPmatrix()*glm::vec4(vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
+            ImGui::Text("%.3f %.3f %.3f %.3f",vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
+            ImGui::Text("%.3f %.3f %.3f %.3f",vec.x/vec.w,vec.y/vec.w,vec.z/vec.w,vec.w);
+            auto vec2 = camera.getPosition();
+            ImGui::Text("Cam pos: %.3f %.3f %.3f",vec2.x,vec2.y,vec2.z);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
@@ -132,12 +153,23 @@ int main(int, char **)
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // My render !
-        shader.use();
         glBufferSubData(GL_ARRAY_BUFFER,0,18*sizeof(float),vertex_data);
-        glDrawArrays(GL_TRIANGLES,0,3);
+        shader.use();
+
+        shader.setUniformMatrix4x4("MVP",camera.getVPmatrix());
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO_pyramid);
+        glDrawElements(GL_TRIANGLES,12,GL_UNSIGNED_INT,0);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ONE_MINUS_SRC_COLOR);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO_mesh);
+        glDrawElements(GL_LINES,12,GL_UNSIGNED_INT,0);
+        //glDrawArrays(GL_TRIANGLES,0,3);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

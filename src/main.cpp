@@ -138,11 +138,11 @@ int main(int, char **)
             ImGui::ColorEdit4("Vertex 1 color:",vertex_data[0].color);
             ImGui::ColorEdit4("Vertex 2 color:",vertex_data[1].color);
             ImGui::ColorEdit4("Vertex 3 color:",vertex_data[2].color);
-            auto vec = camera.getVPmatrix()*glm::vec4(vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
-            ImGui::Text("%.3f %.3f %.3f %.3f",vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
-            ImGui::Text("%.3f %.3f %.3f %.3f",vec.x/vec.w,vec.y/vec.w,vec.z/vec.w,vec.w);
-            auto vec2 = camera.getPosition();
-            ImGui::Text("Cam pos: %.3f %.3f %.3f",vec2.x,vec2.y,vec2.z);
+            //auto vec2 = camera.getVPmatrix()*glm::vec4(vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
+            //ImGui::Text("%.3f %.3f %.3f %.3f",vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
+            //ImGui::Text("%.3f %.3f %.3f %.3f",vec2.x/vec2.w,vec2.y/vec2.w,vec2.z/vec2.w,vec2.w);
+            auto vec = camera.get_position();
+            ImGui::Text("Cam pos: %.3f %.3f %.3f",vec.x,vec.y,vec.z);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }

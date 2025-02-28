@@ -16,10 +16,6 @@ GLuint initFloatVertexBuffer(VertexData *data, size_t length, GLenum type,...)
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, DATA_SIZE * length, data, type);
-    GL_STATIC_DRAW;
-    GL_STATIC_READ;
-    GL_DYNAMIC_DRAW;
-    GL_DYNAMIC_READ;
     size_t sum = 0;
     va_list args;
     va_start(args,type);

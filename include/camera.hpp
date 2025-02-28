@@ -30,7 +30,7 @@ private:
     glm::vec3 prev_position;
     glm::vec3 prev_camera_up;
     glm::ivec2 start_mouse_pos;
-    bool two_axis_rotation = false;
+    bool two_axis_rotation = true;
     bool two_axis_translation = true;
     // const GLFWcursorposfun prev_cursor_position_callback;
     // const GLFWmousebuttonfun prev_mouse_button_callback;

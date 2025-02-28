@@ -12,16 +12,17 @@ static GLint compile(char const *path, GLenum type)
     {
         std::ifstream file;
         file.exceptions(std::ios::badbit | std::ios::failbit); // | std::ios::ate
-        file.open(path,std::ios::binary|std::ios::ate);
+        file.open(path, std::ios::binary | std::ios::ate);
         length = file.tellg();
-        file.seekg(0,std::ios::beg);
+        file.seekg(0, std::ios::beg);
         string = new char[length];
-        file.read(string,length);
+        file.read(string, length);
         file.close();
     }
     catch (const std::ifstream::failure &e)
     {
-        if(string != nullptr) delete[] string;
+        if (string != nullptr)
+            delete[] string;
         std::cerr << "ERROR::SHADER: Could not open file " << path << ": " << e.what() << std::endl;
         return 0;
     }
@@ -99,7 +100,18 @@ Shader::~Shader()
 
 void Shader::setUniformMatrix4x4(char const *name, glm::mat4 const &value)
 {
-    //FIXME: store location
-    GLint location = glGetUniformLocation(program,name);
-    glUniformMatrix4fv(location,1,GL_FALSE,glm::value_ptr(value));
+    // FIXME: store location
+    GLint location = glGetUniformLocation(program, name);
+    if (location != -1)
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setUniformInt(char const *name, int const value)
+{
+    // FIXME: store location
+    GLint location = glGetUniformLocation(program, name);
+    if (location != -1)
+        glUniform1i(location, value);
+    else
+        printf("Int not found\n");
 }

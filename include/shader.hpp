@@ -15,6 +15,7 @@ public:
     Shader operator=(Shader const &) = delete;
     Shader operator=(Shader &&) = delete;
     void setUniformMatrix4x4(char const* name,glm::mat4 const& value);
+    void setUniformInt(char const* name,int const value);
     // Shader();
     // void from_source(char* vertex_string,char* fragment_string);
     // void from_source(char* vertex_string,char* geometry_string,char* framgment_string);

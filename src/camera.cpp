@@ -16,7 +16,6 @@ EditorCamera::EditorCamera(GLFWwindow *window)
 
     int w, h;
     glfwGetWindowSize(window, &w, &h);
-    std::cout << w << ", " << h << std::endl;
     projectionMatrix = glm::perspective(glm::radians(45.0f),
                                         (float)w / (float)h,
                                         0.1f, 100.0f);

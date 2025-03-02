@@ -11,7 +11,7 @@ out vec3 f_norm;
 out vec2 f_textCoord;
 
 void main() {
-    gl_Position = MVP * vec4(vert_pos,1.0);
+    gl_Position = MVP * vec4(vert_pos,1.0);//MVP * vec4(vert_textCoord,0.0,1.0);
     f_pos = vert_pos;
     f_norm = vert_norm;
     f_textCoord = vert_textCoord;

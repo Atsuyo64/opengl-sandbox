@@ -250,6 +250,7 @@ int main(int, char **)
             glEnable(GL_DEPTH_TEST);
             // glEnable(GL_BLEND);
             // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            //glPointSize(10.0f);
             glDrawElements(GL_TRIANGLES, sphere.indices.size(), GL_UNSIGNED_INT, 0);
 
             // glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);

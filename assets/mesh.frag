@@ -11,5 +11,5 @@ uniform int lim;
 
 void main()
 {
-    Fragment_Color = vec4(pow(f_norm,vec3(1.0)),1.0); //vec4(1.0);
+    Fragment_Color = vec4(f_norm,1.0); //vec4(f_textCoord,0.0,1.0);
 }

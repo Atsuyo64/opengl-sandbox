@@ -9,7 +9,7 @@ Shape::UVSphere::UVSphere(size_t stacks, size_t sectors) : mesh{}, indices{}
     assert(stacks > 1 && sectors > 2);
     mesh.reserve(get_num_vertices(stacks, sectors));
     indices.reserve(3 * get_num_triangles(stacks, sectors));
-    mesh.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+    mesh.emplace_back(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.5f, 1.0f));
     for (size_t stack{}; stack < stacks - 1; ++stack)
     {
         float phi = pi * 0.5 - pi * (stack+1) / stacks;
@@ -22,12 +22,14 @@ Shape::UVSphere::UVSphere(size_t stacks, size_t sectors) : mesh{}, indices{}
             float y{sin_phi};
             float z{cos_phi * (float)sin(theta)};
             glm::vec3 pos{x, y, z};
-            float u = 0.5f + atan2(pos.z,pos.x)/(2.0f*pi);
-            float v = 0.5f + asin(pos.y)/pi;
+            //float u = 0.5f + atan2(pos.z,pos.x)/(2.0f*pi);
+            //float v = 0.5f + asin(pos.y)/pi;
+            float u = (float)sector / (float)sectors;
+            float v = 0.5f + phi/pi;
             mesh.emplace_back(pos, pos, glm::vec2(u,v));
         }
     }
-    mesh.emplace_back(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f));
+    mesh.emplace_back(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.5f, 0.0f));
     for (size_t i{}; i < sectors; ++i)
     {
         indices.emplace_back(0);

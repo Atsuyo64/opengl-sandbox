@@ -2,8 +2,9 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include <memory>
+#include <cstddef>
 
-//TODO! re-work !
+// TODO: re-work !
 
 class Mesh
 {

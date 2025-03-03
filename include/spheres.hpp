@@ -1,5 +1,6 @@
 #pragma once
 #include "mesh.hpp"
+#include <cstddef>
 
 namespace Shape
 {

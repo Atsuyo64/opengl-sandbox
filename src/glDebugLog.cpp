@@ -61,7 +61,7 @@ void opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severit
     case GL_DEBUG_SEVERITY_HIGH:
         if ((log_level & 0x7f) > 0)
         {
-            fprintf(stderr, "[GL DEBUG HIGH] from %s (%s): %s", get_source(source), get_type(type), message);
+            fprintf(stderr, "[GL DEBUG HIGH] from %s (%s): %s\n", get_source(source), get_type(type), message);
             if (log_level & 0x80)
 #ifdef SIGTRAP
                 raise(SIGTRAP);
@@ -72,18 +72,18 @@ void opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severit
         break;
     case GL_DEBUG_SEVERITY_MEDIUM:
         if ((log_level & 0x7f) > 1)
-            fprintf(stderr, "[GL DEBUG MEDIUM] from %s (%s): %s", get_source(source), get_type(type), message);
+            fprintf(stderr, "[GL DEBUG MEDIUM] from %s (%s): %s\n", get_source(source), get_type(type), message);
         break;
     case GL_DEBUG_SEVERITY_LOW:
         if ((log_level & 0x7f) > 2)
-            fprintf(stderr, "[GL DEBUG LOW] from %s (%s): %s", get_source(source), get_type(type), message);
+            fprintf(stderr, "[GL DEBUG LOW] from %s (%s): %s\n", get_source(source), get_type(type), message);
         break;
     case GL_DEBUG_SEVERITY_NOTIFICATION:
         if ((log_level & 0x7f) > 3)
-            fprintf(stderr, "[GL DEBUG NOTIF] from %s (%s): %s", get_source(source), get_type(type), message);
+            fprintf(stderr, "[GL DEBUG NOTIF] from %s (%s): %s\n", get_source(source), get_type(type), message);
         break;
     default:
-        fprintf(stderr, "[GL DEBUG UNKNOWN] from %s (%s): %s", get_source(source), get_type(type), message);
+        fprintf(stderr, "[GL DEBUG UNKNOWN] from %s (%s): %s\n", get_source(source), get_type(type), message);
     }
     // fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, messages = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
 }

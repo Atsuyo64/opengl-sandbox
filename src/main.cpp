@@ -1,3 +1,4 @@
+#include <cstddef>
 #include "glad.h"
 #include "glDebugLog.hpp"
 #include "initVertexBuffer.hpp"

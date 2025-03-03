@@ -1,6 +1,7 @@
 #pragma once
 #include "glad.h"
 #include <cstdarg>
+#include <cstddef>
 
 /// @brief Create boilerplate vertex buffer filled with provided data and setup attribute pointers
 /// @param data vertex data

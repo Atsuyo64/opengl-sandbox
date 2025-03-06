@@ -4,17 +4,15 @@
 #include <memory>
 #include <cstddef>
 
-// TODO: re-work !
-
+//template<typename VertexData>
 class Mesh
 {
-public:
+    public:
     struct VertexData
     {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 textCoord;
-        VertexData() {}
+        glm::vec3 position{};
+        glm::vec3 normal{};
+        glm::vec2 textCoord{};
         // VertexData(glm::vec3 &&position_, glm::vec3 &&normal_, glm::vec2 &&textCoord_) : position{std::move(position_)},
         //                                                                              normal{std::move(normal_)},
         //                                                                              textCoord{std::move(textCoord_)} {}
@@ -25,7 +23,8 @@ public:
                                                                                       normal{normal_},
                                                                                       textCoord{textCoord_} {}
     };
-
+    Mesh(){}
+    //Mesh(size_t size):data{}{data.reserve(size);}
     // Mesh(glm::vec3 *positions, glm::vec3 *normals, glm::vec2 *textCoords, size_t count) : data_ptr{new std::vector<VertexData>{count}}
     //{
     //     // todo: check for nullptr !
@@ -37,6 +36,5 @@ public:
     //
     // std::shared_ptr<std::vector<VertexData>> get_mesh() const { return data_ptr; }
 
-private:
-    std::shared_ptr<std::vector<VertexData>> data_ptr;
+    std::vector<VertexData> data{};
 };

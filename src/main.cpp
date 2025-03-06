@@ -12,6 +12,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "spheres.hpp"
 #include <iostream>
+#include <vector>
+#include "virtualScene.hpp"
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -30,7 +32,7 @@ int main(int, char **)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // 3.0+ only
 
-    GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(1280, 720, "OPENGL SANDBOX", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -58,9 +60,7 @@ int main(int, char **)
     // io.ConfigViewportsNoAutoMerge = true;
     io.ConfigViewportsNoTaskBarIcon = true;
 
-    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle &style = ImGui::GetStyle();
@@ -73,6 +73,8 @@ int main(int, char **)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    std::vector<VirtualSceneContainer> scenes{};
 
     struct MyVertexData
     {
@@ -165,15 +167,11 @@ int main(int, char **)
     bool show_pyramid = false;
     bool show_sphere = true;
     bool show_demo_window = false;
+    double time = glfwGetTime();
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); //ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
         if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
         {
@@ -186,17 +184,33 @@ int main(int, char **)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+
+
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
-            ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Main menu"); // Create a window called "Hello, world!" and append into it.
 
             ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
             if (ImGui::Checkbox("Vsynch", &vsynch_enabled))
                 glfwSwapInterval(vsynch_enabled);
+            
+            ImGui::SeparatorText("Scenes");
+            
+            for(VirtualSceneContainer& container : scenes) {
+                if (ImGui::Checkbox(container.name,&container.enabled)) {
+                    if(container.enabled) container.scene->attach();
+                    else container.scene->detach();
+                }
+                if (container.enabled) {
+                    ImGui::Begin(container.name);
+                    container.scene->ImGUIRender();
+                    ImGui::End();
+                }
+            }
             ImGui::Checkbox("Pyramid", &show_pyramid);
             ImGui::Checkbox("Sphere", &show_sphere);
 
@@ -215,6 +229,13 @@ int main(int, char **)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
+
+
+        double newTime = glfwGetTime();
+        for(auto& container : scenes)
+            if(container.enabled)
+                container.scene->update(newTime - time);
+        time = newTime;
 
         // Rendering
         ImGui::Render();

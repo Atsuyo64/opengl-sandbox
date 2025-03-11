@@ -55,6 +55,16 @@ glm::mat4x4 const &EditorCamera::getVPmatrix() const
     return viewProjectionMatrix;
 }
 
+glm::mat4x4 const &EditorCamera::getViewMatrix() const
+{
+    return viewMatrix;
+}
+
+glm::mat4x4 const &EditorCamera::getProjectionMatrix() const
+{
+    return projectionMatrix;
+}
+
 glm::vec3 const &EditorCamera::get_position() const
 {
     return position;

@@ -22,6 +22,7 @@ endif(WIN32)
 
 include_directories(
     include
+    src
     libs/glad
     libs/imgui
     libs/imgui/backends
@@ -31,11 +32,16 @@ include_directories(
 #add_compile_options($<$<CONFIG:Debug>:-fsanitize=address>)
 #add_link_options($<$<CONFIG:Debug>:-fsanitize=address>)
 
-FILE(GLOB SRC_FILES src/**.c src/**.cc src/**.cpp)
-#to add source files manually:
-#set(SRC_FILES
-#   src/main.c
-#)
+#FILE(GLOB SRC_FILES src/**.c src/**.cc src/**.cpp)
+set(SRC_FILES
+   src/main.cpp
+   src/camera.cpp
+   src/openglUtils/glDebugLog.cpp
+   src/openglUtils/shader.cpp
+   src/shapes/spheres.cpp
+   src/scenes/pyramid_scene.cpp
+   src/scenes/sphere_scene.cpp
+)
 
 set(IMGUI_SOURCES
 libs/imgui/imgui.cpp

@@ -93,6 +93,11 @@ void Shader::use() const
     glUseProgram(program);
 }
 
+void Shader::unuse() const
+{
+    glUseProgram(0);
+}
+
 Shader::~Shader()
 {
     glDeleteProgram(program);
@@ -114,4 +119,9 @@ void Shader::setUniformInt(char const *name, int const value)
         glUniform1i(location, value);
     else
         printf("Int not found\n");
+}
+
+GLint Shader::get_program_ID() const
+{
+    return program;
 }

@@ -8,6 +8,7 @@ public:
     Shader(char const *vertex_shader_path, char const *fragment_shader_path);
     Shader(char const *vertex_shader_path, char const *geometry_shader_path, char const *fragment_shader_path);
     void use() const;
+    void unuse() const;
 
     ~Shader();
     Shader(Shader const &) = delete;
@@ -16,6 +17,7 @@ public:
     Shader operator=(Shader &&) = delete;
     void setUniformMatrix4x4(char const* name,glm::mat4 const& value);
     void setUniformInt(char const* name,int const value);
+    GLint get_program_ID() const;
     // Shader();
     // void from_source(char* vertex_string,char* fragment_string);
     // void from_source(char* vertex_string,char* geometry_string,char* framgment_string);

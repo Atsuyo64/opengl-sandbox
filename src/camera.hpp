@@ -12,8 +12,8 @@ public:
     void set_two_axis_rotation(bool two_axis_rotation);
     void set_two_axis_translation(bool two_axis_translation);
     glm::mat4x4 const &getVPmatrix() const;
-    // glm::mat4x4 const& getViewMatrix() const;
-    // glm::mat4x4 const& getProjectionMatrix() const;
+    glm::mat4x4 const& getViewMatrix() const;
+    glm::mat4x4 const& getProjectionMatrix() const;
     glm::vec3 const &get_position() const;
     glm::vec3 const &get_center() const;
 

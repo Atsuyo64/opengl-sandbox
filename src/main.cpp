@@ -1,19 +1,16 @@
 #include <cstddef>
 #include "glad.h"
-#include "glDebugLog.hpp"
-#include "initVertexBuffer.hpp"
-#include "shader.hpp"
+#include "openglUtils/glDebugLog.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 #include "GLFW/glfw3.h"
 #include "camera.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "spheres.hpp"
-#include <iostream>
 #include <vector>
-#include "virtualScene.hpp"
+#include "scenes/virtualScene.hpp"
+#include "scenes/pyramid_scene.hpp"
+#include "scenes/sphere_scene.hpp"
 
 static void glfw_error_callback(int error, const char *description)
 {
@@ -75,55 +72,8 @@ int main(int, char **)
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     std::vector<VirtualSceneContainer> scenes{};
-
-    struct MyVertexData
-    {
-        float pos[2];
-        float color[4];
-    };
-    MyVertexData vertex_data[] = {
-        {{0.0, 0.5}, {1.0, 0.0, 0.0, 1.0}},
-        {{-0.5, -0.5}, {0.0, 1.0, 0.0, 1.0}},
-        {{0.5, -0.5}, {0.0, 0.0, 1.0, 1.0}},
-        {{0.0, 0.0}, {0.0, 0.0, 0.0, 1.0}}};
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    VBO = initFloatVertexBuffer(vertex_data, 4, GL_STATIC_DRAW, 2, 4);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    unsigned EBO_pyramid_data[]{0, 1, 2, 0, 1, 3, 0, 2, 3, 1, 2, 3};
-    GLuint EBO_pyramid;
-    glGenBuffers(1, &EBO_pyramid);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_pyramid);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12 * sizeof(unsigned), EBO_pyramid_data, GL_STATIC_DRAW);
-    unsigned EBO_mesh_data[]{0, 1, 0, 2, 0, 3, 1, 2, 1, 3, 2, 3};
-    GLuint EBO_mesh;
-    glGenBuffers(1, &EBO_mesh);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_mesh);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 12 * sizeof(unsigned), EBO_mesh_data, GL_STATIC_DRAW);
-    Shader shader{"assets/poscolor.vert", "assets/color.frag"};
-
-    GLuint VAO_Sphere, VBO_Sphere, EBO_Sphere;
-    glGenVertexArrays(1, &VAO_Sphere);
-    glGenBuffers(1, &EBO_Sphere);
-    glBindVertexArray(VAO_Sphere);
-    glGenBuffers(1, &VBO_Sphere);
-    // Shape::UVSphere sphere{2, 3};
-    // VBO_Sphere = initFloatVertexBuffer(&sphere.mesh[0], sphere.mesh.size(), GL_STATIC_DRAW, 3, 3, 2);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_Sphere);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices.size() * sizeof(unsigned), &sphere.indices[0], GL_STATIC_DRAW);
-    //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    //  glBindVertexArray(0);
-    //  std::cout << sphere.mesh.size() << " " << sphere.indices.size() << std::endl;
-    //  for (auto &&index : sphere.indices)
-    //      std::cout << index << " ";
-    //  std::cout << std::endl;
-    //  for (auto &&index : sphere.mesh)
-    //      std::cout << "(" << index.position.x << "," << index.position.y << "," << index.position.z << ") ";
-    //  std::cout << std::endl;
-    Shader mesh_shader{"assets/mesh.vert", "assets/mesh.frag"};
-    int stacks = 2;
-    int sectors = 3;
+    scenes.push_back(VirtualSceneContainer{new Pyramid_Scene(), false, "Pyramid"});
+    scenes.push_back(VirtualSceneContainer{new Sphere_Scene(), false, "Sphere"});
 
     /*
     GLuint FramebufferName;
@@ -164,11 +114,10 @@ int main(int, char **)
     Shader quad_shader{"assets/quad.vert","assets/quad.frag"};
     */
 
-    bool show_pyramid = false;
-    bool show_sphere = true;
+    ///bool show_sphere = false;
     bool show_demo_window = false;
     double time = glfwGetTime();
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); //ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); // ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -184,8 +133,6 @@ int main(int, char **)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-
-
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
@@ -197,46 +144,34 @@ int main(int, char **)
             ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
             if (ImGui::Checkbox("Vsynch", &vsynch_enabled))
                 glfwSwapInterval(vsynch_enabled);
-            
+
             ImGui::SeparatorText("Scenes");
-            
-            for(VirtualSceneContainer& container : scenes) {
-                if (ImGui::Checkbox(container.name,&container.enabled)) {
-                    if(container.enabled) container.scene->attach();
-                    else container.scene->detach();
+
+            ImGui::PushID("Scenes");
+            for (VirtualSceneContainer &container : scenes)
+            {
+                if (ImGui::Checkbox(container.name, &container.enabled))
+                {
+                    if (container.enabled)
+                        container.scene->attach();
+                    else
+                        container.scene->detach();
                 }
-                if (container.enabled) {
+                if (container.enabled)
+                {
                     ImGui::Begin(container.name);
                     container.scene->ImGUIRender();
                     ImGui::End();
                 }
             }
-            ImGui::Checkbox("Pyramid", &show_pyramid);
-            ImGui::Checkbox("Sphere", &show_sphere);
+            ImGui::PopID();
 
-            ImGui::ColorEdit4("Vertex 1 color:", vertex_data[0].color);
-            ImGui::ColorEdit4("Vertex 2 color:", vertex_data[1].color);
-            ImGui::ColorEdit4("Vertex 3 color:", vertex_data[2].color);
-
-            ImGui::SliderInt("Stacks", &stacks, 2, 100);
-            ImGui::SliderInt("Sectors", &sectors, 3, 100);
-
-            // auto vec2 = camera.getVPmatrix()*glm::vec4(vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
-            // ImGui::Text("%.3f %.3f %.3f %.3f",vertex_data[0].color[0],vertex_data[0].color[1],vertex_data[0].color[2],vertex_data[0].color[3]);
-            // ImGui::Text("%.3f %.3f %.3f %.3f",vec2.x/vec2.w,vec2.y/vec2.w,vec2.z/vec2.w,vec2.w);
             auto vec = camera.get_position();
             ImGui::Text("Cam pos: %.3f %.3f %.3f", vec.x, vec.y, vec.z);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }
-
-
-        double newTime = glfwGetTime();
-        for(auto& container : scenes)
-            if(container.enabled)
-                container.scene->update(newTime - time);
-        time = newTime;
-
+        
         // Rendering
         ImGui::Render();
         int display_w, display_h;
@@ -244,65 +179,24 @@ int main(int, char **)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glm::mat4 const &view{camera.getViewMatrix()};
+        glm::mat4 const &projection{camera.getProjectionMatrix()};
+        double newTime = glfwGetTime();
+        for (auto &container : scenes)
+            if (container.enabled)
+                container.scene->update(view, projection, newTime - time);
+        time = newTime;
 
-        // My render !
         // glActiveTexture(GL_TEXTURE0);
         // glBindTexture(GL_TEXTURE_2D,rendered_texture);
         // glBindFramebuffer(GL_FRAMEBUFFER,FramebufferName);
-
-        if (show_sphere)
-        {
-            Shape::UVSphere sphere{(size_t)stacks, (size_t)sectors};
-            glBindBuffer(GL_ARRAY_BUFFER, VBO_Sphere);
-            // VBO_Sphere = initFloatVertexBuffer(&sphere.mesh[0], sphere.mesh.size(), GL_STATIC_DRAW, 3, 3, 2);
-            glBufferData(GL_ARRAY_BUFFER, sphere.mesh.size() * sizeof(Mesh::VertexData), sphere.mesh.data(), GL_STATIC_DRAW);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::VertexData), (void *)(0 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::VertexData), (void *)(3 * sizeof(float)));
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::VertexData), (void *)(6 * sizeof(float)));
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_Sphere);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices.size() * sizeof(unsigned), &sphere.indices[0], GL_STATIC_DRAW);
-            glBindVertexArray(VAO_Sphere);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO_Sphere);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_Sphere);
-            mesh_shader.use();
-            mesh_shader.setUniformMatrix4x4("MVP", camera.getVPmatrix());
-            glEnable(GL_DEPTH_TEST);
-            // glEnable(GL_BLEND);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            //glPointSize(10.0f);
-            glDrawElements(GL_TRIANGLES, sphere.indices.size(), GL_UNSIGNED_INT, 0);
-
-            // glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
-            // glDrawElements(GL_LINES, sphere.indices.size(), GL_UNSIGNED_INT, 0);
-        }
 
         // glBindFramebuffer(GL_FRAMEBUFFER,0);
         // glBindVertexArray(VAO_quad);
         // glBindBuffer(GL_ARRAY_BUFFER,VBO_quad);
         // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO_quad);
         // quad_shader.use();
-
-        if (show_pyramid)
-        {
-            glBindVertexArray(VAO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, 18 * sizeof(float), vertex_data);
-            shader.use();
-
-            shader.setUniformMatrix4x4("MVP", camera.getVPmatrix());
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_pyramid);
-            glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_mesh);
-            glDrawElements(GL_LINES, 12, GL_UNSIGNED_INT, 0);
-            // //glDrawArrays(GL_TRIANGLES,0,3);
-        }
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

@@ -75,3 +75,5 @@ size_t Shape::UVSphere::get_num_triangles(size_t stacks, size_t sectors)
 {
     return 2 * stacks * sectors - 2 * sectors;
 }
+
+#undef pi

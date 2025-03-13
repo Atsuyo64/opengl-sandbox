@@ -1,10 +1,10 @@
 [submodule "vendored/glfw"]
-	path = libs/glfw
+	path = vendor/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "vendored/imgui"]
-	path = libs/imgui
+	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
 [submodule "libs/glm"]
-	path = libs/glm
+	path = vendor/glm
 	url = https://github.com/g-truc/glm.git

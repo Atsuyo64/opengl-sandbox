@@ -15,10 +15,12 @@ void Sphere_Scene::attach()
 
     glGenBuffers(1, &EBO);
 
-    shaders = new Shader[2]{{"assets/shaders/mesh.vert", "assets/shaders/mesh.frag"},
+    shaders = new Shader[3]{{"assets/shaders/mesh.vert", "assets/shaders/mesh.frag"},
+                            {"assets/shaders/mesh.vert", "assets/shaders/meshToFlatNorm.geom", "assets/shaders/mesh.frag"},
                             {"assets/shaders/mesh.vert", "assets/shaders/meshToLines.geom", "assets/shaders/mesh.frag"}};
     shader_MVP_locations[0] = glGetUniformLocation(shaders[0].get_program_ID(), "MVP");
     shader_MVP_locations[1] = glGetUniformLocation(shaders[1].get_program_ID(), "MVP");
+    shader_MVP_locations[2] = glGetUniformLocation(shaders[2].get_program_ID(), "MVP");
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -63,20 +65,26 @@ void Sphere_Scene::update(glm::mat4 const &view, glm::mat4 const &projection, fl
     glm::mat4 MVP{projection * view};
     if (show_faces)
     {
-        shaders[0].use();
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CW);
+        if(!no_smooth_shading)
+            shaders[0].use();
+        else
+            shaders[1].use();
         glUniformMatrix4fv(shader_MVP_locations[0], 1, GL_FALSE, glm::value_ptr(MVP));
 
         glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0);
+        glDisable(GL_CULL_FACE);
     }
     if (show_lines)
     {
-        shaders[1].use();
+        shaders[2].use();
         glUniformMatrix4fv(shader_MVP_locations[1], 1, GL_FALSE, glm::value_ptr(MVP));
 
         glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0);
     }
 
-    shaders[1].unuse();
+    shaders[0].unuse();
     glDisable(GL_BLEND);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -88,5 +96,6 @@ void Sphere_Scene::ImGUIRender()
     updated |= ImGui::SliderInt("Stacks", &stack, 2, 100);
     updated |= ImGui::SliderInt("Sectors", &sector, 3, 100);
     ImGui::Checkbox("Show Faces", &show_faces);
+    ImGui::Checkbox("No smooth shading", &no_smooth_shading);
     ImGui::Checkbox("Show Lines", &show_lines);
 }

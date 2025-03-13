@@ -11,11 +11,12 @@ public:
     void ImGUIRender() override;
 private:
     GLuint VAO,VBO,EBO;
-    GLint shader_MVP_locations[2];
+    GLint shader_MVP_locations[3];
     Shader* shaders{nullptr};
     int stack{2}, sector{3};
     bool updated{true};
     bool show_faces{true};
     bool show_lines{false};
+    bool no_smooth_shading{false};
     int num_indices;
 };

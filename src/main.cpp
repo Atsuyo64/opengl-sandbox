@@ -71,6 +71,7 @@ int main(int, char **)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    // Setup scenes
     std::vector<VirtualSceneContainer> scenes{};
     scenes.push_back(VirtualSceneContainer{new Pyramid_Scene(), false, "Pyramid"});
     scenes.push_back(VirtualSceneContainer{new Sphere_Scene(), false, "Sphere"});
@@ -133,15 +134,13 @@ int main(int, char **)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
-            ImGui::Begin("Main menu"); // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin("Main menu");
 
-            ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
+            ImGui::Checkbox("Demo Window", &show_demo_window);
             if (ImGui::Checkbox("Vsynch", &vsynch_enabled))
                 glfwSwapInterval(vsynch_enabled);
 
@@ -166,8 +165,8 @@ int main(int, char **)
             }
             ImGui::PopID();
 
-            auto vec = camera.get_position();
-            ImGui::Text("Cam pos: %.3f %.3f %.3f", vec.x, vec.y, vec.z);
+            // auto vec = camera.get_position();
+            // ImGui::Text("Cam pos: %.3f %.3f %.3f", vec.x, vec.y, vec.z);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
         }

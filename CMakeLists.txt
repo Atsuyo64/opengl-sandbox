@@ -4,6 +4,10 @@ project(sandbox)
 
 set(CMAKE_CXX_STANDARD 17)
 option(STATIC_GLFW "Compile glfw locally" ON)
+option(INCLUDE_ASSIMP
+    "Include assimp (model/scene importer) in projet (quite heavy/long to compile)"
+    ON
+)
 
 if(STATIC_GLFW)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -13,6 +17,26 @@ if(STATIC_GLFW)
 else()
     link_libraries(glfw)
 endif(STATIC_GLFW)
+
+#assimp
+if(INCLUDE_ASSIMP)
+    if(BUILD_SHARED_LIBS)
+        set(PUSHED_BUILD_SHARED_LIBS ON)
+    else()
+        set(PUSHED_BUILD_SHARED_LIBS OFF)
+    endif()
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_ASSIMP_VIEW OFF CACHE BOOL "" FORCE)
+    add_subdirectory(vendor/assimp)
+    if(PUSHED_BUILD_SHARED_LIBS)
+        set(BUILD_SHARED_LIBS ON)
+    else()
+        set(BUILD_SHARED_LIBS OFF)
+    endif()
+    unset(PUSHED_BUILD_SHARED_LIBS)
+endif()
 
 if(WIN32)
     link_libraries(opengl32)
@@ -56,5 +80,5 @@ vendor/imgui/backends/imgui_impl_glfw.cpp
 add_library(glad vendor/glad/glad.c)
     
 add_executable(${CMAKE_PROJECT_NAME} src/main.cpp)
-target_link_libraries(${CMAKE_PROJECT_NAME} glad glfw)
+target_link_libraries(${CMAKE_PROJECT_NAME} glad glfw assimp)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${SRC_FILES} ${IMGUI_SOURCES})

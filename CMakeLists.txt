@@ -9,7 +9,7 @@ if(STATIC_GLFW)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    add_subdirectory(libs/glfw)
+    add_subdirectory(vendor/glfw)
 else()
     link_libraries(glfw)
 endif(STATIC_GLFW)
@@ -23,10 +23,10 @@ endif(WIN32)
 include_directories(
     include
     src
-    libs/glad
-    libs/imgui
-    libs/imgui/backends
-    libs/glm
+    vendor/glad
+    vendor/imgui
+    vendor/imgui/backends
+    vendor/glm
 )
 
 #add_compile_options($<$<CONFIG:Debug>:-fsanitize=address>)
@@ -44,16 +44,16 @@ set(SRC_FILES
 )
 
 set(IMGUI_SOURCES
-libs/imgui/imgui.cpp
-libs/imgui/imgui_demo.cpp
-libs/imgui/imgui_draw.cpp
-libs/imgui/imgui_tables.cpp
-libs/imgui/imgui_widgets.cpp
-libs/imgui/backends/imgui_impl_opengl3.cpp
-libs/imgui/backends/imgui_impl_glfw.cpp
+vendor/imgui/imgui.cpp
+vendor/imgui/imgui_demo.cpp
+vendor/imgui/imgui_draw.cpp
+vendor/imgui/imgui_tables.cpp
+vendor/imgui/imgui_widgets.cpp
+vendor/imgui/backends/imgui_impl_opengl3.cpp
+vendor/imgui/backends/imgui_impl_glfw.cpp
 )
 
-add_library(glad libs/glad/glad.c)
+add_library(glad vendor/glad/glad.c)
     
 add_executable(${CMAKE_PROJECT_NAME} src/main.cpp)
 target_link_libraries(${CMAKE_PROJECT_NAME} glad glfw)

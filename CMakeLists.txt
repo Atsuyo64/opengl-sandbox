@@ -51,6 +51,7 @@ include_directories(
     vendor/imgui
     vendor/imgui/backends
     vendor/glm
+    vendor/stb
 )
 
 #add_compile_options($<$<CONFIG:Debug>:-fsanitize=address>)
@@ -62,6 +63,8 @@ set(SRC_FILES
    src/camera.cpp
    src/openglUtils/glDebugLog.cpp
    src/openglUtils/shader.cpp
+   src/openglUtils/texture.cpp
+   src/openglUtils/frameBuffer.cpp
    src/shapes/spheres.cpp
    src/scenes/pyramid_scene.cpp
    src/scenes/sphere_scene.cpp

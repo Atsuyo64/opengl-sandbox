@@ -3,6 +3,7 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
+#include "stb_image.h"
 
 void Sphere_Scene::attach()
 {
@@ -22,10 +23,12 @@ void Sphere_Scene::attach()
     shader_MVP_locations[1] = glGetUniformLocation(shaders[1].get_program_ID(), "MVP");
     shader_MVP_locations[2] = glGetUniformLocation(shaders[2].get_program_ID(), "MVP");
 
+    texture = new Texture("assets/earth.jpg");
+
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    updated = true; // or else cause GL_OUT_OF_MEMORY...
+    should_generate_sphere = true; // or else cause GL_OUT_OF_MEMORY...
 }
 
 void Sphere_Scene::detach()
@@ -34,6 +37,7 @@ void Sphere_Scene::detach()
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     delete[] shaders;
+    delete texture;
     // shaders = nullptr;
 }
 
@@ -42,9 +46,9 @@ void Sphere_Scene::update(glm::mat4 const &view, glm::mat4 const &projection, fl
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    if (updated)
+    if (should_generate_sphere)
     {
-        updated = false;
+        should_generate_sphere = false;
         Shape::UVSphere sphere{(size_t)stack, (size_t)sector};
         num_indices = sphere.indices.size();
 
@@ -67,16 +71,21 @@ void Sphere_Scene::update(glm::mat4 const &view, glm::mat4 const &projection, fl
     {
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CW);
-        if(!no_smooth_shading)
+        if (!no_smooth_shading)
             shaders[0].use();
         else
             shaders[1].use();
-        glUniformMatrix4fv(shader_MVP_locations[0], 1, GL_FALSE, glm::value_ptr(MVP));
 
+        texture->bind_to_sampler(0);
+
+        glUniformMatrix4fv(shader_MVP_locations[0], 1, GL_FALSE, glm::value_ptr(MVP));
+        shaders[0].setUniformInt("MYTEXTURE",0);
+        
         glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0);
         glDisable(GL_CULL_FACE);
+        //texture->unbind_to_sampler();
     }
-    if (show_lines)
+    if (show_lines && false)
     {
         shaders[2].use();
         glUniformMatrix4fv(shader_MVP_locations[1], 1, GL_FALSE, glm::value_ptr(MVP));
@@ -93,8 +102,8 @@ void Sphere_Scene::update(glm::mat4 const &view, glm::mat4 const &projection, fl
 
 void Sphere_Scene::ImGUIRender()
 {
-    updated |= ImGui::SliderInt("Stacks", &stack, 2, 100);
-    updated |= ImGui::SliderInt("Sectors", &sector, 3, 100);
+    should_generate_sphere |= ImGui::SliderInt("Stacks", &stack, 2, 100);
+    should_generate_sphere |= ImGui::SliderInt("Sectors", &sector, 3, 100);
     ImGui::Checkbox("Show Faces", &show_faces);
     ImGui::Checkbox("No smooth shading", &no_smooth_shading);
     ImGui::Checkbox("Show Lines", &show_lines);

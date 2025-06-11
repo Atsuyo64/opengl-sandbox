@@ -15,5 +15,15 @@ uniform int lim;
 
 void main()
 {
-    Fragment_Color = vec4(texture(MYTEXTURE,frag_in.f_textCoord).xyz,1.0);//vec4(frag_in.f_norm,1.0); //vec4(f_textCoord,0.0,1.0);
+    vec2 coord = frag_in.f_textCoord;
+    coord *= 10.0;
+    coord -= fract(coord);
+    coord /= 10.0;
+    float d = length(dFdx(coord)) + length(dFdy(coord));
+    Fragment_Color = vec4(coord,0.0,1.0)*0.2 + 0.8*texture(MYTEXTURE,frag_in.f_textCoord);
+    if(d>0.0001) {
+        Fragment_Color += vec4(0.35,0.0,0.0,1.0);
+    }
+
+    //vec4(frag_in.f_norm,1.0); //vec4(f_textCoord,0.0,1.0);
 }

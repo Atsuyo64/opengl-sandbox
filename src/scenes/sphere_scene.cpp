@@ -85,7 +85,7 @@ void Sphere_Scene::update(glm::mat4 const &view, glm::mat4 const &projection, fl
         glDisable(GL_CULL_FACE);
         //texture->unbind_to_sampler();
     }
-    if (show_lines && false)
+    if (show_lines)
     {
         shaders[2].use();
         glUniformMatrix4fv(shader_MVP_locations[1], 1, GL_FALSE, glm::value_ptr(MVP));

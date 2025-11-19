@@ -1,6 +1,6 @@
 #include "camera.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "imgui_impl_glfw.h"
+#include "backends/imgui_impl_glfw.h"
 #include <iostream>
 
 EditorCamera::EditorCamera(GLFWwindow *window)

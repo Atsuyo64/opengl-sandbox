@@ -4,16 +4,17 @@ project(sandbox LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-
-# Sanitizers in debug mode
-if (CMAKE_BUILD_TYPE STREQUAL "Debug") # Target ?
-    add_compile_options(-fsanitize=address)
-    add_link_options(-fsanitize=address)
-endif()
+include(FetchContent)
 
 # Options
 option(STATIC_GLFW "Build GLFW from vendor directory" ON)
-option(INCLUDE_ASSIMP "Build Assimp from vendor directory" OFF)
+option(INCLUDE_ASSIMP "Include assimp model importer" OFF)
+
+# Sanitizers in debug mode
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -57,8 +58,13 @@ if(INCLUDE_ASSIMP)
     set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
     set(ASSIMP_BUILD_ASSIMP_VIEW OFF CACHE BOOL "" FORCE)
-    add_subdirectory(vendor/assimp)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE assimp)
+    FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG v6.0.2
+    )
+    FetchContent_MakeAvailable(assimp)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE assimp::assimp)
 endif()
 
 # OpenGL
